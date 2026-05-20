@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DVSP & CO — Header/Footer Layout | Zero Gap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --gold: #c5a263;
+    --gold-dark: #a07e3e;
+    --gold-light: #eedfbf;
+    --dark: #1e1b16;
+    --surface: #f8f6f0;
+    --border: #e0d6c6;
+    --text: #2d2a24;
+    --muted: #8b7f6e;
+    --accent: #2c5f2d;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .topbar {
+    background: var(--dark);
+    color: var(--gold-light);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--gold);
+    flex-wrap: wrap;
+  }
+  .topbar h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .topbar h1 span { color: var(--gold); }
+  .topbar .badge {
+    font-size: 0.7rem;
+    background: rgba(197,162,99,0.2);
+    padding: 4px 12px;
+    border-radius: 40px;
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 74px);
+  }
+
+  /* Panel */
+  .panel {
+    background: #fffefc;
+    border-right: 1px solid var(--border);
+    padding: 28px 22px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    box-shadow: 4px 0 12px rgba(0,0,0,0.02);
+  }
+
+  .panel-section {
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 20px;
+  }
+  .panel-section:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .panel-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .label-tag {
+    background: var(--gold-light);
+    color: var(--dark);
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fdfaf5;
+    margin-bottom: 10px;
+  }
+  .upload-zone:hover { border-color: var(--gold); background: #fff7ed; }
+  .upload-zone.has-image { border-style: solid; border-color: var(--gold); background: #fffaf0; }
+  .upload-zone .preview-thumb {
+    max-width: 100%;
+    max-height: 65px;
+    object-fit: contain;
+    display: none;
+    margin-bottom: 6px;
+  }
+  .upload-zone.has-image .preview-thumb { display: block; }
+  .upload-zone.has-image .upload-hint { display: none; }
+  .upload-hint .icon { font-size: 1.6rem; display: block; }
+
+  .fit-select, .preset-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: white;
+    font-size: 0.8rem;
+    margin-top: 6px;
+  }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .filter-row label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    width: 90px;
+    color: var(--muted);
+  }
+  .filter-row input[type="range"] { flex: 1; accent-color: var(--gold); }
+  .filter-val { min-width: 42px; font-size: 0.75rem; font-weight: 600; color: var(--gold-dark); }
+
+  .watermark-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .wm-preset {
+    background: #f4efea;
+    border-radius: 40px;
+    padding: 6px 4px;
+    text-align: center;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .wm-preset.active {
+    border-color: var(--gold);
+    background: #fdf3dc;
+    font-weight: 600;
+  }
+  .wm-preset:hover { background: #e9dfd1; }
+
+  .btn {
+    width: 100%;
+    padding: 11px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 8px;
+    border: none;
+  }
+  .btn-primary { background: var(--dark); color: var(--gold-light); border: 1px solid var(--gold); }
+  .btn-primary:hover { background: #2f2a22; transform: translateY(-1px); }
+  .btn-download { background: var(--accent); color: #e2f0e2; }
+  .btn-download:hover { background: #1f4520; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-danger { background: #8b3c2c; color: #f0ddc0; }
+  .btn-danger:hover { background: #6b2e1f; }
+
+  /* Preview */
+  .preview-area {
+    background: #e6e1d6;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    gap: 20px;
+  }
+  .preview-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    background: rgba(0,0,0,0.05);
+    padding: 4px 18px;
+    border-radius: 40px;
+  }
+  #document-canvas {
+    width: 100%;
+    max-width: 1000px;
+    background: white;
+    box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  
+  /* HEADER SLOT with watermark layer */
+  #header-slot { 
+    position: relative; 
+    background: #fff; 
+    overflow: hidden;
+  }
+  #header-watermark-layer {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: overlay;
+    opacity: 0.25;
+  }
+  #header-main-img { 
+    width: 100%; 
+    display: block; 
+    transition: filter 0.2s;
+  }
+  
+  /* CONTENT SLOT - now used ONLY as GAP spacer (no text, no ad message) */
+  #content-slot {
+    background: white;
+    transition: min-height 0.2s ease;
+    min-height: var(--gap-height, 0px);
+    height: auto;
+    width: 100%;
+    /* No padding, no text, just empty spacer */
+  }
+  
+  /* FOOTER SLOT */
+  #footer-slot img { 
+    width: 100%; 
+    display: block; 
+  }
+  .slot-placeholder {
+    padding: 32px;
+    text-align: center;
+    background: #fcfaf7;
+    color: #bcaf9a;
+    font-size: 0.8rem;
+  }
+
+  @media print {
+    .panel, .topbar, .preview-label, .download-note { display: none; }
+    .workspace { display: block; }
+    #document-canvas { box-shadow: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>DVSP <span>&</span> CO · HEADER & FOOTER BUILDER</h1>
+  <div class="badge">Zero Gap Mode | Watermark Overlay on Header</div>
+</div>
+
+<div class="workspace">
+  <aside class="panel">
+    
+    <!-- ========= SECTION 1: HEADER IMAGE + WATERMARK ========= -->
+    <div class="panel-section">
+      <h3>🎨 ① Header Image + Watermark</h3>
+      <div class="upload-zone" id="header-zone">
+        <input type="file" accept="image/*" id="header-input" />
+        <img class="preview-thumb" id="header-thumb" />
+        <div class="upload-hint"><span class="icon">🖼️</span><p>Upload Header / Brand Image</p></div>
+      </div>
+      <select class="fit-select" id="header-fit">
+        <option value="100% auto">Full Width (auto height) — Recommended</option>
+        <option value="100% 100px">Fixed Height 100px</option>
+        <option value="100% 140px">Fixed Height 140px</option>
+        <option value="100% 180px">Fixed Height 180px</option>
+        <option value="100% 240px">Fixed Height 240px</option>
+      </select>
+
+      <div class="label-tag" style="margin-top: 12px;">💧 Header Watermark Overlay</div>
+      <div class="watermark-preset-grid" id="wm-preset-grid">
+        <div class="wm-preset" data-wm="laptop">💻 Laptop / Tech</div>
+        <div class="wm-preset" data-wm="office">🏢 Modern Office</div>
+        <div class="wm-preset" data-wm="taxdoc">📋 Tax Document</div>
+        <div class="wm-preset" data-wm="handshake">🤝 Handshake</div>
+        <div class="wm-preset" data-wm="finance">📊 Finance Chart</div>
+        <div class="wm-preset" data-wm="legal">⚖️ Legal / Court</div>
+        <div class="wm-preset" data-wm="custom">📁 Custom Upload</div>
+        <div class="wm-preset" data-wm="none">🚫 No Watermark</div>
+      </div>
+      
+      <div class="filter-row">
+        <label>Intensity</label>
+        <input type="range" id="wm-intensity" min="0" max="70" value="22" />
+        <span id="wm-intensity-val" class="filter-val">22%</span>
+      </div>
+      <div class="filter-row">
+        <label>Blend Mode</label>
+        <select id="wm-blendmode" style="flex:1; border-radius:30px; padding:6px;">
+          <option value="overlay">Overlay (Soft)</option>
+          <option value="multiply">Multiply</option>
+          <option value="soft-light">Soft Light</option>
+          <option value="luminosity">Luminosity</option>
+        </select>
+      </div>
+      <input type="file" id="custom-wm-input" accept="image/*" style="display:none;" />
+      <button class="btn-ghost" id="clear-wm-btn" style="margin-top:8px; padding:8px;">✖ Clear Watermark</button>
+    </div>
+
+    <!-- ========= SECTION 2: FOOTER IMAGE ========= -->
+    <div class="panel-section">
+      <h3>📎 ② Footer Image</h3>
+      <div class="upload-zone" id="footer-zone">
+        <input type="file" accept="image/*" id="footer-input" />
+        <img class="preview-thumb" id="footer-thumb" />
+        <div class="upload-hint"><span class="icon">🏛️</span><p>Upload Footer / Firm Stamp</p></div>
+      </div>
+      <select class="fit-select" id="footer-fit">
+        <option value="100% auto">Full Width (auto height)</option>
+        <option value="100% 70px">Fixed Height 70px</option>
+        <option value="100% 90px">Fixed Height 90px</option>
+        <option value="100% 120px">Fixed Height 120px</option>
+      </select>
+    </div>
+
+    <!-- ========= SECTION 3: GAP CONTROL (ZERO DISTANCE POSSIBLE) ========= -->
+    <div class="panel-section">
+      <h3>📏 ③ Gap: Header ↔ Footer</h3>
+      <span class="label-tag">Direct spacing — set to 0 for no distance</span>
+      <div class="filter-row">
+        <label>Vertical Gap (px)</label>
+        <input type="range" id="gap-slider" min="0" max="400" value="0" step="1" />
+        <span id="gap-value" class="filter-val">0px</span>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 8px;">
+        <button id="zero-gap-btn" class="btn-ghost" style="padding: 6px; font-size: 0.7rem;">⟷ ZERO GAP (0px)</button>
+        <button id="small-gap-btn" class="btn-ghost" style="padding: 6px; font-size: 0.7rem;">↕ Small 20px</button>
+        <button id="medium-gap-btn" class="btn-ghost" style="padding: 6px; font-size: 0.7rem;">↕ Medium 80px</button>
+      </div>
+      <p style="font-size: 0.68rem; color: var(--muted); margin-top: 8px;">
+        ✅ When set to <strong>0px</strong>, header and footer touch directly — no empty space, no content area visible.
+      </p>
+    </div>
+
+    <!-- ========= SECTION 4: IMAGE FILTERS (Header + Footer) ========= -->
+    <div class="panel-section">
+      <h3>✨ ④ Creative Filters</h3>
+      <p class="label-tag" style="margin-top:0;">Header Image</p>
+      <div class="filter-row"><label>Hue</label><input type="range" id="header-hue" min="0" max="360" value="0" /><span id="header-hue-val" class="filter-val">0°</span></div>
+      <div class="filter-row"><label>Brightness</label><input type="range" id="header-bright" min="40" max="180" value="100" /><span id="header-bright-val" class="filter-val">100%</span></div>
+      <div class="filter-row"><label>Saturation</label><input type="range" id="header-sat" min="0" max="200" value="100" /><span id="header-sat-val" class="filter-val">100%</span></div>
+      
+      <p class="label-tag" style="margin-top: 12px;">Footer Image</p>
+      <div class="filter-row"><label>Hue</label><input type="range" id="footer-hue" min="0" max="360" value="0" /><span id="footer-hue-val" class="filter-val">0°</span></div>
+      <div class="filter-row"><label>Brightness</label><input type="range" id="footer-bright" min="40" max="180" value="100" /><span id="footer-bright-val" class="filter-val">100%</span></div>
+      <div class="filter-row"><label>Saturation</label><input type="range" id="footer-sat" min="0" max="200" value="100" /><span id="footer-sat-val" class="filter-val">100%</span></div>
+      
+      <button id="reset-filters-btn" class="btn-ghost" style="margin-top: 12px;">⟳ Reset All Image Filters</button>
+    </div>
+
+    <!-- ========= SECTION 5: BACKGROUND TEXTURE (optional subtle) ========= -->
+    <div class="panel-section">
+      <h3>🖼️ ⑤ Optional Background Texture</h3>
+      <span class="label-tag">Behind whole document (subtle)</span>
+      <div class="filter-row"><label>Upload BG</label><input type="file" id="doc-bg-file" accept="image/*" /></div>
+      <div class="filter-row"><label>Opacity</label><input type="range" id="doc-bg-opacity" min="0" max="40" value="8" /><span id="doc-bg-val" class="filter-val">8%</span></div>
+      <button id="clear-doc-bg" class="btn-ghost">Clear Background</button>
+    </div>
+
+    <!-- ========= ACTIONS (Unconditional Download) ========= -->
+    <div class="panel-section">
+      <h3>⚡ Export & Actions</h3>
+      <button class="btn btn-download" id="download-png-btn">⬇️ Export PNG (No Conditions)</button>
+      <button class="btn btn-primary" id="print-pdf-btn">🖨️ Print / Save as PDF</button>
+      <button class="btn btn-ghost" id="reset-all-btn">↺ Reset Everything</button>
+      <div id="status-msg" style="font-size: 0.7rem; text-align: center; margin-top: 12px; color: var(--gold-dark);"></div>
+    </div>
+  </aside>
+
+  <!-- PREVIEW AREA -->
+  <main class="preview-area">
+    <div class="preview-label">LIVE PREVIEW — HEADER + FOOTER (Zero Gap Ready)</div>
+    <div id="document-canvas" style="position: relative;">
+      <!-- Optional document background layer -->
+      <div id="doc-bg-layer" style="position: absolute; top:0; left:0; width:100%; height:100%; background-size: cover; background-position: center; opacity:0; pointer-events: none; z-index:0; border-radius:16px;"></div>
+      
+      <!-- Header Slot with Watermark -->
+      <div id="header-slot" style="position: relative; z-index: 1;">
+        <div id="header-watermark-layer"></div>
+        <div id="header-placeholder" class="slot-placeholder">⬆ Upload Header Image (Studio Brand)</div>
+      </div>
+      
+      <!-- GAP SPACER: This is the ONLY thing between header and footer - no text, no ads -->
+      <div id="content-slot" style="z-index: 1; position: relative;"></div>
+      
+      <!-- Footer Slot -->
+      <div id="footer-slot" style="position: relative; z-index: 1;">
+        <div id="footer-placeholder" class="slot-placeholder">⬇ Upload Footer Image (Firm Stamp)</div>
+      </div>
+    </div>
+    <div class="download-note" style="font-size: 0.7rem; color: #5a5246; text-align: center; max-width: 900px;">
+      💡 <strong>Zero distance mode active:</strong> Set gap to 0px → header and footer touch directly with no space. <br/>
+      Watermark overlays only on header image. Download PNG anytime.
+    </div>
+  </main>
+</div>
+
+<script>
+  // ---- Image Elements & State ----
+  let headerImgElem = null;
+  let footerImgElem = null;
+  let currentHeaderUrl = null;
+  let currentFooterUrl = null;
+  let currentWatermarkUrl = null;
+  let docBgUrl = null;
+
+  // DOM references
+  const headerZone = document.getElementById('header-zone');
+  const headerInput = document.getElementById('header-input');
+  const headerThumb = document.getElementById('header-thumb');
+  const headerSlot = document.getElementById('header-slot');
+  const headerPlaceholderDiv = document.getElementById('header-placeholder');
+
+  const footerZone = document.getElementById('footer-zone');
+  const footerInput = document.getElementById('footer-input');
+  const footerThumb = document.getElementById('footer-thumb');
+  const footerSlot = document.getElementById('footer-slot');
+  const footerPlaceholderDiv = document.getElementById('footer-placeholder');
+
+  // ----- HEADER FUNCTIONS -----
+  function updateHeaderDOM() {
+    if (!currentHeaderUrl) return;
+    if (!headerImgElem) {
+      if (headerPlaceholderDiv) headerPlaceholderDiv.remove();
+      headerImgElem = document.createElement('img');
+      headerImgElem.id = 'header-main-img';
+      headerSlot.prepend(headerImgElem);
+      headerSlot.style.position = 'relative';
+    }
+    headerImgElem.src = currentHeaderUrl;
+    applyHeaderFit();
+    applyHeaderFilters();
+    applyHeaderWatermark();
+  }
+
+  function applyHeaderFit() {
+    if (!headerImgElem) return;
+    const val = document.getElementById('header-fit').value;
+    if (val === '100% auto') {
+      headerImgElem.style.width = '100%';
+      headerImgElem.style.height = 'auto';
+      headerImgElem.style.objectFit = 'cover';
+    } else {
+      let [w, h] = val.split(' ');
+      headerImgElem.style.width = w;
+      headerImgElem.style.height = h;
+      headerImgElem.style.objectFit = 'cover';
+    }
+  }
+
+  function applyHeaderFilters() {
+    if (!headerImgElem) return;
+    const hue = document.getElementById('header-hue').value;
+    const bright = document.getElementById('header-bright').value;
+    const sat = document.getElementById('header-sat').value;
+    headerImgElem.style.filter = `hue-rotate(${hue}deg) brightness(${bright/100}) saturate(${sat/100})`;
+  }
+
+  function applyHeaderWatermark() {
+    const layer = document.getElementById('header-watermark-layer');
+    if (currentWatermarkUrl) {
+      layer.style.backgroundImage = `url('${currentWatermarkUrl}')`;
+      layer.style.backgroundSize = 'cover';
+      layer.style.backgroundPosition = 'center';
+      const intensity = document.getElementById('wm-intensity').value / 100;
+      layer.style.opacity = intensity;
+      layer.style.mixBlendMode = document.getElementById('wm-blendmode').value;
+      layer.style.display = 'block';
+    } else {
+      layer.style.display = 'none';
+      layer.style.backgroundImage = '';
+    }
+  }
+
+  // ----- FOOTER FUNCTIONS -----
+  function updateFooterDOM() {
+    if (!currentFooterUrl) return;
+    if (!footerImgElem) {
+      if (footerPlaceholderDiv) footerPlaceholderDiv.remove();
+      footerImgElem = document.createElement('img');
+      footerImgElem.id = 'footer-main-img';
+      footerSlot.appendChild(footerImgElem);
+    }
+    footerImgElem.src = currentFooterUrl;
+    applyFooterFit();
+    applyFooterFilters();
+  }
+
+  function applyFooterFit() {
+    if (!footerImgElem) return;
+    const val = document.getElementById('footer-fit').value;
+    if (val === '100% auto') {
+      footerImgElem.style.width = '100%';
+      footerImgElem.style.height = 'auto';
+      footerImgElem.style.objectFit = 'cover';
+    } else {
+      let [w, h] = val.split(' ');
+      footerImgElem.style.width = w;
+      footerImgElem.style.height = h;
+      footerImgElem.style.objectFit = 'cover';
+    }
+  }
+
+  function applyFooterFilters() {
+    if (!footerImgElem) return;
+    const hue = document.getElementById('footer-hue').value;
+    const bright = document.getElementById('footer-bright').value;
+    const sat = document.getElementById('footer-sat').value;
+    footerImgElem.style.filter = `hue-rotate(${hue}deg) brightness(${bright/100}) saturate(${sat/100})`;
+  }
+
+  // Event listeners for uploads
+  headerInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+      currentHeaderUrl = URL.createObjectURL(e.target.files[0]);
+      headerThumb.src = currentHeaderUrl;
+      headerZone.classList.add('has-image');
+      updateHeaderDOM();
+      setStatus('✅ Header image loaded');
+    }
+  });
+
+  footerInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+      currentFooterUrl = URL.createObjectURL(e.target.files[0]);
+      footerThumb.src = currentFooterUrl;
+      footerZone.classList.add('has-image');
+      updateFooterDOM();
+      setStatus('✅ Footer image loaded');
+    }
+  });
+
+  // Fit & filter listeners
+  document.getElementById('header-fit').addEventListener('change', () => applyHeaderFit());
+  document.getElementById('footer-fit').addEventListener('change', () => applyFooterFit());
+  ['header-hue','header-bright','header-sat'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => { applyHeaderFilters(); updateFilterDisplays(); });
+  });
+  ['footer-hue','footer-bright','footer-sat'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => { applyFooterFilters(); updateFilterDisplays(); });
+  });
+
+  // ----- GAP CONTROL (ZERO DISTANCE) -----
+  const gapSlider = document.getElementById('gap-slider');
+  const gapValueSpan = document.getElementById('gap-value');
+  const contentSlot = document.getElementById('content-slot');
+  
+  function setGap(px) {
+    contentSlot.style.setProperty('--gap-height', px + 'px');
+    contentSlot.style.minHeight = px + 'px';
+    gapValueSpan.innerText = px + 'px';
+    gapSlider.value = px;
+  }
+  
+  gapSlider.addEventListener('input', () => setGap(parseInt(gapSlider.value)));
+  document.getElementById('zero-gap-btn').addEventListener('click', () => setGap(0));
+  document.getElementById('small-gap-btn').addEventListener('click', () => setGap(20));
+  document.getElementById('medium-gap-btn').addEventListener('click', () => setGap(80));
+  setGap(0);  // default = ZERO GAP — no distance between header and footer
+
+  // ----- WATERMARK PRESETS (Laptop, Office, Tax, Handshake, Finance, Legal) -----
+  const wmPresets = {
+    laptop: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80',
+    office: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80',
+    taxdoc: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80',
+    handshake: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&q=80',
+    finance: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80',
+    legal: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80'
+  };
+  const customWmInput = document.getElementById('custom-wm-input');
+  const presetDivs = document.querySelectorAll('.wm-preset');
+  presetDivs.forEach(div => {
+    div.addEventListener('click', () => {
+      presetDivs.forEach(d => d.classList.remove('active'));
+      div.classList.add('active');
+      const type = div.dataset.wm;
+      if (type === 'none') { currentWatermarkUrl = null; applyHeaderWatermark(); setStatus('Watermark removed'); }
+      else if (type === 'custom') { customWmInput.click(); }
+      else if (wmPresets[type]) { currentWatermarkUrl = wmPresets[type]; applyHeaderWatermark(); setStatus(`Watermark: ${type} applied`); }
+    });
+  });
+  customWmInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+      currentWatermarkUrl = URL.createObjectURL(e.target.files[0]);
+      applyHeaderWatermark();
+      setStatus('Custom watermark loaded');
+    }
+  });
+  document.getElementById('clear-wm-btn').addEventListener('click', () => { currentWatermarkUrl = null; applyHeaderWatermark(); setStatus('Watermark cleared'); });
+  document.getElementById('wm-intensity').addEventListener('input', () => {
+    document.getElementById('wm-intensity-val').innerText = document.getElementById('wm-intensity').value + '%';
+    applyHeaderWatermark();
+  });
+  document.getElementById('wm-blendmode').addEventListener('change', () => applyHeaderWatermark());
+
+  // ----- DOCUMENT BACKGROUND TEXTURE -----
+  const docBgLayer = document.getElementById('doc-bg-layer');
+  const docBgFile = document.getElementById('doc-bg-file');
+  const docBgOpacity = document.getElementById('doc-bg-opacity');
+  docBgFile.addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      docBgUrl = URL.createObjectURL(e.target.files[0]);
+      docBgLayer.style.backgroundImage = `url('${docBgUrl}')`;
+      docBgLayer.style.backgroundSize = 'cover';
+      docBgLayer.style.opacity = docBgOpacity.value / 100;
+    }
+  });
+  docBgOpacity.addEventListener('input', () => {
+    if (docBgUrl) docBgLayer.style.opacity = docBgOpacity.value / 100;
+    document.getElementById('doc-bg-val').innerText = docBgOpacity.value + '%';
+  });
+  document.getElementById('clear-doc-bg').addEventListener('click', () => {
+    docBgUrl = null;
+    docBgLayer.style.backgroundImage = '';
+    docBgLayer.style.opacity = 0;
+    setStatus('Background cleared');
+  });
+
+  // Reset filters display
+  function updateFilterDisplays() {
+    document.getElementById('header-hue-val').innerText = document.getElementById('header-hue').value + '°';
+    document.getElementById('header-bright-val').innerText = document.getElementById('header-bright').value + '%';
+    document.getElementById('header-sat-val').innerText = document.getElementById('header-sat').value + '%';
+    document.getElementById('footer-hue-val').innerText = document.getElementById('footer-hue').value + '°';
+    document.getElementById('footer-bright-val').innerText = document.getElementById('footer-bright').value + '%';
+    document.getElementById('footer-sat-val').innerText = document.getElementById('footer-sat').value + '%';
+  }
+  document.getElementById('reset-filters-btn').addEventListener('click', () => {
+    document.getElementById('header-hue').value = 0;
+    document.getElementById('header-bright').value = 100;
+    document.getElementById('header-sat').value = 100;
+    document.getElementById('footer-hue').value = 0;
+    document.getElementById('footer-bright').value = 100;
+    document.getElementById('footer-sat').value = 100;
+    applyHeaderFilters();
+    applyFooterFilters();
+    updateFilterDisplays();
+    setStatus('Filters reset');
+  });
+  updateFilterDisplays();
+
+  // ----- DOWNLOAD PNG (UNCONDITIONAL) -----
+  document.getElementById('download-png-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('download-png-btn');
+    btn.textContent = '⏳ Rendering...';
+    if (!window.html2canvas) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+    try {
+      const node = document.getElementById('document-canvas');
+      const canvas = await html2canvas(node, { scale: 2.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
+      const link = document.createElement('a');
+      link.download = 'dvsp_header_footer.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      setStatus('✅ PNG exported successfully!');
+    } catch (err) {
+      setStatus('⚠️ Error, try PDF instead');
+    }
+    btn.textContent = '⬇️ Export PNG (No Conditions)';
+  });
+
+  document.getElementById('print-pdf-btn').addEventListener('click', () => window.print());
+  document.getElementById('reset-all-btn').addEventListener('click', () => location.reload());
+
+  function setStatus(msg) {
+    const st = document.getElementById('status-msg');
+    st.textContent = msg;
+    setTimeout(() => { if (st.textContent === msg) st.textContent = ''; }, 2500);
+  }
+</script>
+</body>
+</html>
